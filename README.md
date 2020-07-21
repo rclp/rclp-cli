@@ -18,16 +18,16 @@ Install it first, then authenticate using your Google Account:
 $ node cli.js -a
 ```
 
-Paste the latest data from your remote clipboard:
-
-```
-$ node cli.js -p
-```
-
 Copy data to your remote clipboard from stdin:
 
 ```
 echo "hi there" | node cli.js -c
+```
+
+Paste the latest data from your remote clipboard:
+
+```
+$ node cli.js -p
 ```
 
 
