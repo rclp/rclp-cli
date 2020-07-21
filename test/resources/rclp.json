@@ -1,0 +1,4 @@
+{
+  "apiUrl": "https://example.org/rclp",
+  "oauthClientId": "my-oauth2-client-id"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "rclp-cli",
+  "version": "0.1.0",
+  "description": "rclip CLI.",
+  "bin": {
+    "rclp": "./cli.js"
+  },
+  "scripts": {
+    "test": "NODE_ENV=test mocha --recursive test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rclp/rclp-cli.git"
+  },
+  "author": "Atsuya Takagi <asoftonight@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rclp/rclp-cli/issues"
+  },
+  "homepage": "https://github.com/rclp/rclp-cli#readme",
+  "dependencies": {
+    "google-auth-library": "6.0.5",
+    "yargs": "15.4.1"
+  },
+  "devDependencies": {
+    "eslint": "7.5.0",
+    "eslint-config-google": "0.14.0",
+    "mocha": "8.0.1"
+  },
+  "private": true
+}
