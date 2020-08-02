@@ -78,7 +78,7 @@ describe('ConfigUtility', () => {
     it('returns credential file path for Windows', () => {
       assert.strictEqual(
           ConfigUtility.credentialPathWindows(),
-          path.resolve(process.env.HOME, 'rclp', 'credential.json'))
+          path.resolve(process.env.APPDATA, 'rclp', 'credential.json'))
     })
   })
 })
