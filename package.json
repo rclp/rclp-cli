@@ -6,7 +6,7 @@
     "rclp": "./cli.js"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --recursive test"
+    "test": "mocha --recursive test"
   },
   "repository": {
     "type": "git",
