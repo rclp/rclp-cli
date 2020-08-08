@@ -80,7 +80,7 @@ async function prepareConfigFile() {
         path.dirname(destination),
         {
           recursive: true,
-          mode: 0o600,
+          mode: 0o700,
         })
     const source = path.resolve(__dirname, './default-rclp.json')
     fs.copyFileSync(source, destination)
