@@ -30,6 +30,18 @@ describe('ConfigUtility', () => {
           ConfigUtility.credentialPathLinux(),
           path.resolve(process.env.HOME, '.config', 'rclp', 'credential.json'))
     })
+
+    it('knows config path based on the running env on Linux', () => {
+      assert.strictEqual(
+          ConfigUtility.configPath(),
+          path.resolve(process.env.HOME, '.config', 'rclp', 'rclp.json'))
+    })
+
+    it('knows credential path based on the running env on Linux', () => {
+      assert.strictEqual(
+          ConfigUtility.credentialPath(),
+          path.resolve(process.env.HOME, '.config', 'rclp', 'credential.json'))
+    })
   })
 
   context('on macOS', () => {
@@ -60,6 +72,28 @@ describe('ConfigUtility', () => {
               'rclp',
               'credential.json'))
     })
+
+    it('knows config path based on the running env on macOS', () => {
+      assert.strictEqual(
+          ConfigUtility.configPath(),
+          path.resolve(
+              process.env.HOME,
+              'Library',
+              'Application Support',
+              'rclp',
+              'rclp.json'))
+    })
+
+    it('knows credential path based on the running env on macOS', () => {
+      assert.strictEqual(
+          ConfigUtility.credentialPath(),
+          path.resolve(
+              process.env.HOME,
+              'Library',
+              'Application Support',
+              'rclp',
+              'credential.json'))
+    })
   })
 
   context('on Windows', () => {
@@ -78,6 +112,18 @@ describe('ConfigUtility', () => {
     it('returns credential file path for Windows', () => {
       assert.strictEqual(
           ConfigUtility.credentialPathWindows(),
+          path.resolve(process.env.APPDATA, 'rclp', 'credential.json'))
+    })
+
+    it('knows config path based on the running env on Windows', () => {
+      assert.strictEqual(
+          ConfigUtility.configPath(),
+          path.resolve(process.env.APPDATA, 'rclp', 'rclp.json'))
+    })
+
+    it('knows credential path based on the running env on Windows', () => {
+      assert.strictEqual(
+          ConfigUtility.credentialPath(),
           path.resolve(process.env.APPDATA, 'rclp', 'credential.json'))
     })
   })
