@@ -35,6 +35,6 @@ module.exports = async (config) => {
   console.log('You have been signed in to Google.')
   console.log('You will sign in to Firebase when you execute copy/paste.')
 
-  const path = ConfigUtility.credentialPathLinux()
+  const path = ConfigUtility.credentialPath()
   await googleCredential.saveTo(path)
 }

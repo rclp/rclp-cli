@@ -71,7 +71,7 @@ async function mergeConfig(config, prepared) {
  * Checks if a config file exists, and create one if there isn't.
  */
 async function prepareConfigFile() {
-  const destination = ConfigUtility.configPathLinux()
+  const destination = ConfigUtility.configPath()
   if (fs.existsSync(destination)) {
     return
   }
@@ -130,7 +130,7 @@ async function main() {
   }
 
   // load config
-  const config = new Config(ConfigUtility.configPathLinux())
+  const config = new Config(ConfigUtility.configPath())
   try {
     await config.load()
   } catch (exception) {
@@ -149,7 +149,7 @@ async function main() {
   } else if (argv.copy || argv.paste || argv.indefinite) {
     // the rest of options require sign in
     // make sure the credential file exists
-    if (!fs.existsSync(ConfigUtility.credentialPathLinux())) {
+    if (!fs.existsSync(ConfigUtility.credentialPath())) {
       console.error(
           'Credential file does not exist. ' +
           'Try -a option to authenticate first.')
