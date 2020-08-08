@@ -1,5 +1,7 @@
 # rclp-cli
 
+![Build Status of Unit Test](https://github.com/rclp/rclp-cli/workflows/Unit%20Test/badge.svg)
+
 rclp CLI.
 
 
