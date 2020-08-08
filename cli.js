@@ -69,16 +69,24 @@ async function mergeConfig(config, prepared) {
 
 /**
  * Checks if a config file exists, and create one if there isn't.
+ *
+ * @return {string} Config file path.
  */
 async function prepareConfigFile() {
   const destination = ConfigUtility.configPath()
-  if (fs.existsSync(destination)) {
-    return
+  if (!fs.existsSync(destination)) {
+    console.log('Config file does not exist, creating one')
+    fs.mkdirSync(
+        path.dirname(destination),
+        {
+          recursive: true,
+          mode: 0o600,
+        })
+    const source = path.resolve(__dirname, './default-rclp.json')
+    fs.copyFileSync(source, destination)
   }
 
-  console.log('Config file does not exist, creating one')
-  const source = path.resolve(__dirname, './default-rclp.json')
-  fs.copyFileSync(source, destination)
+  return destination
 }
 
 /**
@@ -122,15 +130,16 @@ async function main() {
       .argv
 
   // prepare config file
+  let configFilePath
   try {
-    await prepareConfigFile()
+    configFilePath = await prepareConfigFile()
   } catch (exception) {
     console.error(`Failed to prepare config file: ${exception.message}`)
     process.exit(1)
   }
 
   // load config
-  const config = new Config(ConfigUtility.configPath())
+  const config = new Config(configFilePath)
   try {
     await config.load()
   } catch (exception) {
