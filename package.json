@@ -19,13 +19,13 @@
   },
   "homepage": "https://github.com/rclp/rclp-cli#readme",
   "dependencies": {
-    "google-auth-library": "6.0.5",
+    "google-auth-library": "6.0.6",
     "yargs": "15.4.1"
   },
   "devDependencies": {
-    "eslint": "7.5.0",
+    "eslint": "7.6.0",
     "eslint-config-google": "0.14.0",
-    "mocha": "8.0.1"
+    "mocha": "8.1.1"
   },
   "private": true
 }
