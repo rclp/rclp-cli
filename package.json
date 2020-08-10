@@ -26,6 +26,5 @@
     "eslint": "7.6.0",
     "eslint-config-google": "0.14.0",
     "mocha": "8.1.1"
-  },
-  "private": true
+  }
 }
