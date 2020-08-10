@@ -1,5 +1,5 @@
 {
-  "name": "rclp-cli",
+  "name": "@rclp/rclp-cli",
   "version": "0.1.0",
   "description": "rclip CLI.",
   "bin": {
