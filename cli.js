@@ -19,6 +19,7 @@ const OperationUtility = require('./lib/operation-utility')
 const authenticationOperation = require('./authentication-operation')
 const copyOperation = require('./copy-operation')
 const pasteOperation = require('./paste-operation')
+const userOperation = require('./user-operation')
 
 /**
  * Prepares for operations.
@@ -102,23 +103,29 @@ async function main() {
           boolean: true,
           alias: 'a',
         },
-        'indefinite': {
-          description: 'Run indefinitely',
-          required: false,
-          boolean: true,
-          alias: 'i',
-        },
         'copy': {
           description: 'Copy data from stdin',
           required: false,
           boolean: true,
           alias: 'c',
         },
+        'indefinite': {
+          description: 'Run indefinitely',
+          required: false,
+          boolean: true,
+          alias: 'i',
+        },
         'paste': {
           description: 'Paste data from the remote clipboard',
           required: false,
           boolean: true,
           alias: 'p',
+        },
+        'user': {
+          description: 'Print currently signed in user',
+          required: false,
+          boolean: true,
+          alias: 'u',
         },
         'help': {
           description: 'Show help',
@@ -155,7 +162,7 @@ async function main() {
       console.error(`Error executing auth: ${exception.message}`)
     }
     return
-  } else if (argv.copy || argv.paste || argv.indefinite) {
+  } else if (argv.copy || argv.indefinite || argv.paste || argv.user) {
     // the rest of options require sign in
     // make sure the credential file exists
     if (!fs.existsSync(ConfigUtility.credentialPath())) {
@@ -181,6 +188,10 @@ async function main() {
         console.error(`Error while executing copy: ${exception.message}`)
       }
       return
+    } else if (argv.indefinite) {
+      // TODO: implement
+      console.log('This option has not been implemented yet')
+      return
     } else if (argv.paste) {
       try {
         await pasteOperation(mergedConfig)
@@ -188,9 +199,12 @@ async function main() {
         console.error(`Error while executing paste: ${exception.message}`)
       }
       return
-    } else if (argv.indefinite) {
-      // TODO: implement
-      console.log('This option has not been implemented yet')
+    } else if (argv.user) {
+      try {
+        await userOperation(mergedConfig)
+      } catch (exception) {
+        console.error(`Error while executing user: ${exception.message}`)
+      }
       return
     }
   } else {
