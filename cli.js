@@ -85,6 +85,7 @@ async function prepareConfigFile() {
         })
     const source = path.resolve(__dirname, './default-rclp.json')
     fs.copyFileSync(source, destination)
+    fs.chmodSync(destination, 0o600)
   }
 
   return destination
