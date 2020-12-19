@@ -10,17 +10,20 @@ const os = require('os')
 
 const DesktopNotifier = require('../lib/desktop-notifier')
 const DesktopNotifierNotifySend = require('../lib/desktop-notifier-notify-send')
+const DesktopNotifierOsascript = require('../lib/desktop-notifier-osascript')
 
 describe('DesktopNotifer', () => {
   let desktopNotifier = null
+
+  beforeEach(() => {
+    desktopNotifier = new DesktopNotifier()
+  })
 
   context('on Linux', () => {
     before(function beforeFunction() {
       if (os.type().toLowerCase() !== 'linux') {
         this.skip()
       }
-
-      desktopNotifier = new DesktopNotifier()
     })
 
     it('uses notify-send', () => {
@@ -35,6 +38,12 @@ describe('DesktopNotifer', () => {
       if (os.type().toLowerCase() !== 'darwin') {
         this.skip()
       }
+    })
+
+    it('uses display notification via osascript', () => {
+      assert.strictEqual(
+          desktopNotifier.notifier instanceof DesktopNotifierOsascript,
+          true)
     })
   })
 
