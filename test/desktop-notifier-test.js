@@ -11,6 +11,7 @@ const os = require('os')
 const DesktopNotifier = require('../lib/desktop-notifier')
 const DesktopNotifierNotifySend = require('../lib/desktop-notifier-notify-send')
 const DesktopNotifierOsascript = require('../lib/desktop-notifier-osascript')
+const DesktopNotifierBurntToast = require('../lib/desktop-notifier-burnttoast')
 
 describe('DesktopNotifer', () => {
   let desktopNotifier = null
@@ -52,6 +53,12 @@ describe('DesktopNotifer', () => {
       if (os.type().toLowerCase() !== 'windows_nt') {
         this.skip()
       }
+    })
+
+    it('uses BurntToast', () => {
+      assert.strictEqual(
+          desktopNotifier.notifier instanceof DesktopNotifierBurntToast,
+          true)
     })
   })
 })
