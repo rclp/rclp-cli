@@ -83,7 +83,7 @@ async function mergeConfig(config, prepared) {
 async function prepareConfigFile() {
   const destination = ConfigUtility.configPath()
   if (!fs.existsSync(destination)) {
-    console.log('Config file does not exist, creating one')
+    console.log(`Config file does not exist, creating one: ${destination}`)
     fs.mkdirSync(
         path.dirname(destination),
         {
@@ -148,7 +148,6 @@ async function handleOperations(argv, config) {
       if (argv.paste) {
         console.log(currentPasteValue)
       } else if (argv.indefinite) {
-        console.log('setting up timer')
         // setting up a timer to call this function again here because:
         // - doing so right after the if statement above will continue to call
         //   this function even when the pasting operation is failing.
@@ -156,7 +155,6 @@ async function handleOperations(argv, config) {
           handleOperations(argv, config)
         }, INDEFINITE_INTERVAL)
 
-        console.log(`pasting to system clipboard: ${currentPasteValue}`)
         try {
           await clipboardy.write(currentPasteValue)
         } catch (exception) {
@@ -166,7 +164,6 @@ async function handleOperations(argv, config) {
         }
 
         // notify only when the paste value has been updated
-        console.log(`comparing: '${previousPasteValue}', '${currentPasteValue}'`)
         if (previousPasteValue !== currentPasteValue) {
           try {
             const desktopNotifier = new DesktopNotifier()
@@ -212,7 +209,7 @@ async function main() {
           alias: 'c',
         },
         'indefinite': {
-          description: 'Run indefinitely',
+          description: 'Run paste operation indefinitely in loop',
           required: false,
           boolean: true,
           alias: 'i',
