@@ -23,6 +23,9 @@ const copyOperation = require('./copy-operation')
 const pasteOperation = require('./paste-operation')
 const userOperation = require('./user-operation')
 
+// this is hardcoded as this dictates how often the api call will be made,
+// and i want to control it
+const INDEFINITE_INTERVAL = 10000
 let currentPasteValue = null
 
 /**
@@ -151,7 +154,7 @@ async function handleOperations(argv, config) {
         //   this function even when the pasting operation is failing.
         setTimeout(() => {
           handleOperations(argv, config)
-        }, 5000)
+        }, INDEFINITE_INTERVAL)
 
         console.log(`pasting to system clipboard: ${currentPasteValue}`)
         try {
