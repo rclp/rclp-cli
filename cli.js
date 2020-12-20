@@ -10,16 +10,20 @@
 const fs = require('fs')
 const path = require('path')
 
+const clipboardy = require('clipboardy')
 const yargs = require('yargs')
 
 const Config = require('./lib/config')
 const ConfigUtility = require('./lib/config-utility')
 const OperationUtility = require('./lib/operation-utility')
+const DesktopNotifier = require('./lib/desktop-notifier')
 
 const authenticationOperation = require('./authentication-operation')
 const copyOperation = require('./copy-operation')
 const pasteOperation = require('./paste-operation')
 const userOperation = require('./user-operation')
+
+let currentPasteValue = null
 
 /**
  * Prepares for operations.
@@ -92,6 +96,100 @@ async function prepareConfigFile() {
 }
 
 /**
+ * Handles specified operations.
+ *
+ * @param {!Object} argv argv value from Yargs.
+ * @param {!Config} config Config object.
+ */
+async function handleOperations(argv, config) {
+  if (argv.auth) {
+    try {
+      await authenticationOperation(config)
+    } catch (exception) {
+      throw new Error(`Error executing auth: ${exception.message}`)
+    }
+  } else if (argv.copy || argv.indefinite || argv.paste || argv.user) {
+    // the rest of options require sign in
+    // make sure the credential file exists
+    if (!fs.existsSync(ConfigUtility.credentialPath())) {
+      throw new Error(
+          'Credential file does not exist. ' +
+          'Try -a option to authenticate first.')
+    }
+
+    let mergedConfig
+    try {
+      const prepared = await prepareCredential(config)
+      mergedConfig = await mergeConfig(config, prepared)
+    } catch (exception) {
+      throw new Error(`Failed to authenticate: ${exception.message}`)
+    }
+
+    if (argv.copy) {
+      try {
+        await copyOperation(mergedConfig)
+      } catch (exception) {
+        throw new Error(`Error while executing copy: ${exception.message}`)
+      }
+    } else if (argv.paste || argv.indefinite) {
+      let result = null
+      try {
+        result = await pasteOperation(mergedConfig)
+      } catch (exception) {
+        throw new Error(`Error while executing paste: ${exception.message}`)
+      }
+
+      const previousPasteValue = currentPasteValue
+      currentPasteValue = result
+
+      if (argv.paste) {
+        console.log(currentPasteValue)
+      } else if (argv.indefinite) {
+        console.log('setting up timer')
+        // setting up a timer to call this function again here because:
+        // - doing so right after the if statement above will continue to call
+        //   this function even when the pasting operation is failing.
+        setTimeout(() => {
+          handleOperations(argv, config)
+        }, 5000)
+
+        console.log(`pasting to system clipboard: ${currentPasteValue}`)
+        try {
+          await clipboardy.write(currentPasteValue)
+        } catch (exception) {
+          throw new Error(
+              'Error while pasting it to system clipboard: ' +
+              `${exception.message}`)
+        }
+
+        // notify only when the paste value has been updated
+        console.log(`comparing: '${previousPasteValue}', '${currentPasteValue}'`)
+        if (previousPasteValue !== currentPasteValue) {
+          try {
+            const desktopNotifier = new DesktopNotifier()
+            await desktopNotifier.notify(
+                'New value pasted',
+                'rclp-cli pasted the latest value to your system clipboard')
+          } catch (exception) {
+            throw new Error(
+                'Error while showing a notification: ' +
+                `${exception.message}`)
+          }
+        }
+      }
+    } else if (argv.user) {
+      try {
+        await userOperation(mergedConfig)
+      } catch (exception) {
+        throw new Error(`Error while executing user: ${exception.message}`)
+      }
+    }
+  } else {
+    yargs.showHelp()
+  }
+}
+
+/**
  * Runs main function.
  */
 async function main() {
@@ -144,6 +242,7 @@ async function main() {
   } catch (exception) {
     console.error(`Failed to prepare config file: ${exception.message}`)
     process.exit(1)
+    return
   }
 
   // load config
@@ -156,60 +255,13 @@ async function main() {
     return
   }
 
-  if (argv.auth) {
-    try {
-      await authenticationOperation(config)
-    } catch (exception) {
-      console.error(`Error executing auth: ${exception.message}`)
-    }
-    return
-  } else if (argv.copy || argv.indefinite || argv.paste || argv.user) {
-    // the rest of options require sign in
-    // make sure the credential file exists
-    if (!fs.existsSync(ConfigUtility.credentialPath())) {
-      console.error(
-          'Credential file does not exist. ' +
-          'Try -a option to authenticate first.')
-      process.exit(1)
-    }
-
-    let mergedConfig
-    try {
-      const prepared = await prepareCredential(config)
-      mergedConfig = await mergeConfig(config, prepared)
-    } catch (exception) {
-      console.error(`Failed to authenticate: ${exception.message}`)
-      process.exit(2)
-    }
-
-    if (argv.copy) {
-      try {
-        await copyOperation(mergedConfig)
-      } catch (exception) {
-        console.error(`Error while executing copy: ${exception.message}`)
-      }
-      return
-    } else if (argv.indefinite) {
-      // TODO: implement
-      console.log('This option has not been implemented yet')
-      return
-    } else if (argv.paste) {
-      try {
-        await pasteOperation(mergedConfig)
-      } catch (exception) {
-        console.error(`Error while executing paste: ${exception.message}`)
-      }
-      return
-    } else if (argv.user) {
-      try {
-        await userOperation(mergedConfig)
-      } catch (exception) {
-        console.error(`Error while executing user: ${exception.message}`)
-      }
-      return
-    }
-  } else {
-    yargs.showHelp()
+  // execute a specified operation
+  currentPasteValue = null
+  try {
+    await handleOperations(argv, config)
+  } catch (exception) {
+    console.error(`Failed to execute the operation: ${exception.message}`)
+    process.exit(2)
     return
   }
 }
